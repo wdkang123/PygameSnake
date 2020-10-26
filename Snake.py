@@ -3,8 +3,8 @@ import random
 import math
 
 
-screen_width = 400
-screen_height = 400
+screen_width = 500
+screen_height = 500
 pygame.init()
 screencaption = pygame.display.set_caption('Snake')
 screen = pygame.display.set_mode([screen_width, screen_height])
@@ -35,28 +35,51 @@ while True:
         snake_list.pop()
         x = head_pos[0]
         y = head_pos[1]
-        # 吃果实
-        if x == apple_x and y == apple_y:
-            snake_list.insert(0, (apple_x, apple_y))
+        # 移动
+        # 0左 1上 2右 3下
         if direction == 0:
+            # 判断死亡 超出屏幕
             if x < 0:
                 pass
             x = x - 1
         elif direction == 1:
+            # 判断死亡 超出屏幕
             if y < 0:
-                pass
+                break
             y = y - 1
         elif direction == 2:
+            # 判断死亡 超出屏幕
             if x > 20:
-                pass
+                break
             x = x + 1
         elif direction == 3:
+            # 判断死亡 超出屏幕
             if y > 20:
-                pass
+                break
             y = y + 1
+        # 已经移动
+        # 判断是否死亡
+        # 自己撞死
+        pos = (x, y)
+        if pos in snake_list:
+            break
+        # 如果没有死亡 那就移动蛇
         snake_list.insert(0, (x, y))
+        # 吃果实
+        head_pos = snake_list[0]
+        x_ = head_pos[0]
+        y_ = head_pos[1]
+        if x_ == apple_x and y_ == apple_y:
+            snake_list.append((x, y))
+            # 随机果实坐标
+            apple_x = random.randint(0, 20)
+            apple_y = random.randint(0, 20)
+            pos = (apple_x, apple_y)
+            while pos in snake_list:
+                apple_x = random.randint(0, 20)
+                apple_y = random.randint(0, 20)
+                pos = (apple_x, apple_y)
     n = n + 1
-
     # 画蛇
     snake_list_index = 0
     for each in snake_list:
@@ -77,12 +100,16 @@ while True:
             quit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                direction = 0
-            if event.key == pygame.K_UP:
-                direction = 1
-            if event.key == pygame.K_RIGHT:
-                direction = 2
-            if event.key == pygame.K_DOWN:
-                direction = 3
+                if direction != 2:
+                    direction = 0
+            elif event.key == pygame.K_UP:
+                if direction != 3:
+                    direction = 1
+            elif event.key == pygame.K_RIGHT:
+                if direction != 0:
+                    direction = 2
+            elif event.key == pygame.K_DOWN:
+                if direction != 1:
+                    direction = 3
     pygame.display.flip()
 
